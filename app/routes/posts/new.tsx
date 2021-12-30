@@ -1,4 +1,4 @@
-import { Form, Link, redirect } from "remix";
+import { ErrorBoundaryComponent, Form, Link, redirect } from "remix";
 import type { ActionFunction } from "remix";
 
 export const action: ActionFunction = async ({ request }) => {
@@ -6,6 +6,7 @@ export const action: ActionFunction = async ({ request }) => {
   const title = form.get("title");
   const body = form.get("body");
   // TODO: submit to database
+  throw new Error("Not Implemented.");
   return redirect("/posts");
 };
 
@@ -31,6 +32,20 @@ const New = () => {
           Add Post
         </button>
       </Form>
+    </>
+  );
+};
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  return (
+    <>
+      <div className="page-header">
+        <h1>Error</h1>
+        <Link to="/posts/new" className="btn btn-reverse">
+          Back
+        </Link>
+      </div>
+      <p>{error.message}</p>
     </>
   );
 };

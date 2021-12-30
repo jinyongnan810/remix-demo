@@ -1,4 +1,11 @@
-import { Link, LiveReload, Outlet, Links, Meta } from "remix";
+import {
+  Link,
+  LiveReload,
+  Outlet,
+  Links,
+  Meta,
+  ErrorBoundaryComponent,
+} from "remix";
 import globalCss from "~/styles/global.css";
 export const links = () => [{ rel: "stylesheet", href: globalCss }];
 export const meta = () => {
@@ -63,3 +70,18 @@ function Layout({ children }: { children: React.ReactElement }) {
     </>
   );
 }
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  return (
+    <Document title="Error">
+      <Layout>
+        <>
+          <div className="page-header">
+            <h1>Error</h1>
+          </div>
+          <p>{error.message}</p>
+        </>
+      </Layout>
+    </Document>
+  );
+};
