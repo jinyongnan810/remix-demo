@@ -1,32 +1,25 @@
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration
-} from "remix";
-import type { MetaFunction } from "remix";
+import { LiveReload, Outlet } from "remix";
 
-export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
-};
+export default function App(){
+  return (
+    <Document title={'remix demo'}>
+      <Outlet/>
+    </Document>
+  )
+}
 
-export default function App() {
+function Document({children,title}:{children:React.ReactElement ,title:string}){
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <Meta />
-        <Links />
+        <title>{title}</title>
       </head>
       <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {/* load the content */}
+        {children}
+        {/* enable live reload in dev*/}
+        {process.env.NODE_ENV ==='development' && <LiveReload/>}
       </body>
     </html>
-  );
+  )
 }
