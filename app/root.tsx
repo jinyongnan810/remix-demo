@@ -1,5 +1,6 @@
-import { Link, LiveReload, Outlet } from "remix";
-
+import { Link, LiveReload, Outlet, Links } from "remix";
+import globalCss from "~/styles/global.css";
+export const links = () => [{ rel: "stylesheet", href: globalCss }];
 export default function App() {
   return (
     <Document title={"remix demo"}>
@@ -20,6 +21,7 @@ function Document({
   return (
     <html lang="en">
       <head>
+        <Links />
         <title>{title}</title>
       </head>
       <body>
