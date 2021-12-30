@@ -1,6 +1,15 @@
-import { Link, LiveReload, Outlet, Links } from "remix";
+import { Link, LiveReload, Outlet, Links, Meta } from "remix";
 import globalCss from "~/styles/global.css";
 export const links = () => [{ rel: "stylesheet", href: globalCss }];
+export const meta = () => {
+  const description = "A cool blog built with Remix";
+  const keywords = "remix, react, typescript";
+
+  return {
+    description,
+    keywords,
+  };
+};
 export default function App() {
   return (
     <Document title={"remix demo"}>
@@ -22,6 +31,9 @@ function Document({
     <html lang="en">
       <head>
         <Links />
+        <Meta />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>{title}</title>
       </head>
       <body>
