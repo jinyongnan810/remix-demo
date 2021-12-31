@@ -1,13 +1,16 @@
 import { ErrorBoundaryComponent, Form, Link, redirect } from "remix";
 import type { ActionFunction } from "remix";
+import { db } from "~/utils/db.server";
 
 export const action: ActionFunction = async ({ request }) => {
+  // this runs at server
   const form = await request.formData();
   const title = form.get("title");
   const body = form.get("body");
-  // TODO: submit to database
-  throw new Error("Not Implemented.");
-  return redirect("/posts");
+  if (!(title && body)) return;
+  const fields = { title: title.toString(), body: body.toString() };
+  const post = await db.post.create({ data: fields });
+  return redirect(`/posts/${post.id}`);
 };
 
 const New = () => {

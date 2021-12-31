@@ -1,13 +1,15 @@
 import { Link, useLoaderData } from "remix";
+import { db } from "~/utils/db.server";
 
 // this runs at server side
-export const loader = () => {
+export const loader = async () => {
+  const posts = await db.post.findMany({
+    take: 20,
+    select: { id: true, title: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  });
   const data = {
-    posts: [
-      { id: "1", title: "title1", body: "post1" },
-      { id: "2", title: "title2", body: "post2" },
-      { id: "3", title: "title3", body: "post3" },
-    ],
+    posts: posts,
   };
   return data;
 };
@@ -15,7 +17,7 @@ export const loader = () => {
 type Post = {
   id: string;
   title: string;
-  body: string;
+  updatedAt: string;
 };
 
 type PostsPageData = {
@@ -36,7 +38,10 @@ const PostItems = () => {
         <ul className="posts-list">
           {posts.map((post) => (
             <li key={post.id}>
-              <Link to={post.id}>{post.title}</Link>
+              <Link to={post.id}>
+                <h3>{post.title}</h3>
+                {new Date(post.updatedAt).toLocaleString()}
+              </Link>
             </li>
           ))}
         </ul>
