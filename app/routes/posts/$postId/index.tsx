@@ -55,6 +55,9 @@ const PostItem = () => {
       <div className="page-footer">
         <Form method="post">
           <input type="hidden" name="_method" value="delete" />
+          <Link to={`/posts/${post.id}/edit`} className="btn btn-update">
+            update
+          </Link>
           <button type="submit" className="btn btn-delete">
             delete
           </button>

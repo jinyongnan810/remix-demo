@@ -100,6 +100,13 @@ p {
   width: 100%;
 }
 
+.btn-update {
+  background: skyblue;
+  color: #fff;
+  border-color: skyblue;
+  font-size: 13px;
+  padding: 5px 10px;
+}
 .btn-delete {
   background: darkred;
   color: #fff;
