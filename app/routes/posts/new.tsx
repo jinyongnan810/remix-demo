@@ -8,6 +8,7 @@ import {
 } from "remix";
 import type { ActionFunction } from "remix";
 import { db } from "~/utils/db.server";
+import { getUser } from "~/utils/session.server";
 
 const validateTitle = (title?: string) => {
   if (typeof title != "string" || title.length < 3) {
@@ -35,7 +36,13 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ fieldErrors, fields }, { status: 400 });
   }
 
-  const post = await db.post.create({ data: { title: title!, body: body! } });
+  // get user
+  const user = await getUser(request);
+  if (!user) return redirect("/auth/login");
+  // create post by the user
+  const post = await db.post.create({
+    data: { title: title!, body: body!, userId: user.id },
+  });
   return redirect(`/posts/${post.id}`);
 };
 

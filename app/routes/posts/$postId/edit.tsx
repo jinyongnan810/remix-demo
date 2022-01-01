@@ -10,6 +10,7 @@ import {
 import type { ActionFunction, LoaderFunction } from "remix";
 import { db } from "~/utils/db.server";
 import { useState } from "react";
+import { getUser } from "~/utils/session.server";
 
 const validateTitle = (title?: string) => {
   if (typeof title != "string" || title.length < 3) {
@@ -24,6 +25,10 @@ const validateBody = (body?: string) => {
 
 export const action: ActionFunction = async ({ request, params }) => {
   // this runs at server
+  // check user
+  const user = await getUser(request);
+  if (!user) return redirect("/auth/login");
+  // check post
   const postId = params["postId"];
   const form = await request.formData();
   const title = form.get("title")?.toString();
@@ -37,20 +42,30 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (Object.values(fieldErrors).some((x) => x)) {
     return json({ fieldErrors, fields }, { status: 400 });
   }
-  const post = await db.post.update({
+  const post = await db.post.findUnique({
+    where: { id: postId },
+    select: { userId: true },
+  });
+  if (post?.userId !== user.id) throw new Error("Not Authorized!");
+  if (!post) throw new Error("Post not found!");
+  await db.post.update({
     where: { id: postId },
     data: { title: title!, body: body! },
   });
-  return redirect(`/posts/${post.id}`);
+  return redirect(`/posts/${postId}`);
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+  // check user
+  const user = await getUser(request);
+  if (!user) return redirect("/auth/login");
   const postId = params["postId"];
   const post = await db.post.findUnique({
     where: { id: postId },
-    select: { id: true, title: true, body: true },
+    select: { id: true, title: true, body: true, userId: true },
   });
   if (!post) throw new Error("Post not found.");
+  if (post.userId !== user.id) throw new Error("Not Authorized!");
   const data = {
     post,
   };
