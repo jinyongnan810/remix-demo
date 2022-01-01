@@ -5,8 +5,11 @@ import {
   Links,
   Meta,
   ErrorBoundaryComponent,
+  LoaderFunction,
+  useLoaderData,
 } from "remix";
 import globalCss from "~/styles/global.css";
+import { getUser } from "./utils/session.server";
 export const links = () => [{ rel: "stylesheet", href: globalCss }];
 export const meta = () => {
   const description = "A cool blog built with Remix";
@@ -16,6 +19,10 @@ export const meta = () => {
     description,
     keywords,
   };
+};
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await getUser(request);
+  return { user };
 };
 export default function App() {
   return (
@@ -53,7 +60,15 @@ function Document({
   );
 }
 
+type LoaderData = {
+  user: {
+    id: string;
+    username: string;
+  } | null;
+};
+
 function Layout({ children }: { children: React.ReactElement }) {
+  const { user } = useLoaderData<LoaderData>();
   return (
     <>
       <nav className="navbar">
@@ -64,6 +79,19 @@ function Layout({ children }: { children: React.ReactElement }) {
           <li>
             <Link to="/posts">Posts</Link>
           </li>
+          {user ? (
+            <li>
+              <form action="/auth/logout" method="POST">
+                <button className="btn" type="submit">
+                  Logout {user.username}
+                </button>
+              </form>
+            </li>
+          ) : (
+            <li>
+              <Link to="/auth/login">Login</Link>
+            </li>
+          )}
         </ul>
       </nav>
       <div className="container">{children}</div>
